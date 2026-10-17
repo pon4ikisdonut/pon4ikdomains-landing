@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pon4ik subdomains — Персональные сабдомены с Cloudflare & DNS</title>
+  <meta name="description" content="Регистрация сабдоменов с полной настройкой DNS, Cloudflare Proxy и защитой от абуз. Оплата в Telegram Stars.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(18, 20, 29, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.12);
+      --accent: #ff6b81;
+      --accent-glow: rgba(255, 107, 129, 0.25);
+      --tg: #24A1DE;
+      --text: #f1f3f7;
+      --text-muted: #8b92a4;
+      --star: #f5b041;
+      --orange: #f38020;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(255, 107, 129, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(36, 161, 222, 0.05) 0%, transparent 40%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 32px 0 20px;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-donut {
+      font-size: 1.5rem;
+      filter: drop-shadow(0 2px 8px var(--accent-glow));
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-tg {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(36, 161, 222, 0.12);
+      color: var(--tg);
+      border: 1px solid rgba(36, 161, 222, 0.25);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-tg:hover {
+      background: var(--tg);
+      color: #fff;
+      border-color: var(--tg);
+      box-shadow: 0 4px 16px rgba(36, 161, 222, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 60px 0 40px;
+      text-align: center;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #fff 30%, #8b92a4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+
+    /* Calculator Widget */
+    .calc-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      max-width: 680px;
+      margin: 0 auto 60px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      text-align: left;
+    }
+
+    .calc-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .calc-input-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 6px 12px;
+      gap: 8px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .calc-input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .calc-input {
+      flex: 1;
+      min-width: 140px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem;
+      padding: 8px 4px;
+    }
+
+    .calc-input::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    .calc-zone-select {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      outline: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .calc-zone-select option {
+      background: #141721;
+      color: #fff;
+    }
+
+    .calc-preview {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .calc-price {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .calc-price-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .calc-price-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--star);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .calc-price-period {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #ff6b81 0%, #ff8e53 100%);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(255, 107, 129, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-main:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(255, 107, 129, 0.5);
+    }
+
+    /* Zones Grid */
+    .section-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .zones-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+
+    .zone-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      color: var(--text);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .zone-pill:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      color: #fff;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .feat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .feat-card:hover {
+      border-color: var(--card-hover);
+      transform: translateY(-3px);
+    }
+
+    .feat-icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+    }
+
+    .feat-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feat-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Abuse Notice Banner */
+    .abuse-banner {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 16px;
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .abuse-info h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fca5a5;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .abuse-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-abuse {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-abuse:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 14px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <span class="logo-donut">🍩</span>
+        <span>pon4ikdomains</span>
+      </a>
+      <div class="header-actions">
+        <a href="https://t.me/pon4ikdomain_bot" target="_blank" class="btn-tg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+          <span>Открыть бота</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container hero">
+      <div class="badge-pill">
+        <span class="badge-dot"></span>
+        <span>Cloudflare Edge & Serverless Powered</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span>Сабдомены для ваших проектов.</span><br>
+        <span class="highlight">Быстро. Просто. В Telegram.</span>
+      </h1>
+
+      <p class="hero-desc">
+        Регистрируйте персональные имена на проверенных зонах с полной настройкой DNS записей, защитой Cloudflare и оплатой в Telegram Stars.
+      </p>
+
+      <!-- Interactive Calculator -->
+      <div class="calc-card">
+        <div class="calc-title">
+          <span>Проверить имя и стоимость</span>
+          <span id="charCount">0 симв.</span>
+        </div>
+
+        <div class="calc-input-wrap">
+          <input type="text" id="subInput" class="calc-input" placeholder="например: vpn, cool, shop" maxlength="32" autofocus>
+          <select id="zoneSelect" class="calc-zone-select">
+            <option value=".femboy.pp.ua">.femboy.pp.ua</option>
+            <option value=".kawaii.pp.ua">.kawaii.pp.ua</option>
+            <option value=".ilovefurry.pp.ua">.ilovefurry.pp.ua</option>
+            <option value=".pon4ikisdonut.pp.ua">.pon4ikisdonut.pp.ua</option>
+            <option value=".donetskpeoplerepublic.pp.ua">.donetskpeoplerepublic.pp.ua</option>
+            <option value=".фембой.pp.ua">.фембой.pp.ua</option>
+          </select>
+        </div>
+
+        <div class="calc-preview">
+          <div class="calc-price">
+            <span class="calc-price-label">Тариф подписки:</span>
+            <div class="calc-price-val">
+              <span id="priceVal">25</span>
+              <span>⭐</span>
+              <span class="calc-price-period">/ месяц</span>
+            </div>
+          </div>
+          <a href="https://t.me/pon4ikdomain_bot" target="_blank" class="btn-main" id="orderBtn">
+            <span>Зарегистрировать</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Available Zones -->
+      <div class="section-title">Доступные доменные зоны</div>
+      <div class="zones-grid">
+        <div class="zone-pill">🌐 .femboy.pp.ua</div>
+        <div class="zone-pill">✨ .kawaii.pp.ua</div>
+        <div class="zone-pill">🐾 .ilovefurry.pp.ua</div>
+        <div class="zone-pill">🍩 .pon4ikisdonut.pp.ua</div>
+        <div class="zone-pill">🚩 .donetskpeoplerepublic.pp.ua</div>
+        <div class="zone-pill">🌸 .фембой.pp.ua</div>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon">⚙️</div>
+          <h3 class="feat-title">Удобный редактор DNS</h3>
+          <p class="feat-desc">Полный контроль над записями A, AAAA, CNAME, TXT и MX прямо через кнопочный интерфейс бота без ожидания.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">🟠</div>
+          <h3 class="feat-title">Cloudflare Proxy</h3>
+          <p class="feat-desc">Включение и выключение оранжевого облака Cloudflare в один клик для защиты от DDoS и скрытия исходного сервера.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">⭐</div>
+          <h3 class="feat-title">Telegram Stars</h3>
+          <p class="feat-desc">Оплата без ввода банковских карт через встроенные Telegram Stars. Удобная подписка на 30 дней с продлением.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">🎟️</div>
+          <h3 class="feat-title">Промокоды</h3>
+          <p class="feat-desc">Поддержка промокодов на фиксированные скидки и 100% бесплатную активацию для друзей и участников комьюнити.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">🛡️</div>
+          <h3 class="feat-title">Abuse & DMCA контроль</h3>
+          <p class="feat-desc">Автоматические перенаправления на защиту по путям /abuse и /.well-known/security.txt на всех сайтах.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">💬</div>
+          <h3 class="feat-title">Поддержка в боте</h3>
+          <p class="feat-desc">Прямой тикет-чат с администрацией прямо в диалоге бота по любым вопросам настройки или помощи.</p>
+        </div>
+      </div>
+
+      <!-- Abuse Notice Banner -->
+      <div class="abuse-banner">
+        <div class="abuse-info">
+          <h4>🛡️ Заметили нелегальный контент или фишинг?</h4>
+          <p>Мы строго следим за соблюдением правил. Нарушающие сабдомены мгновенно блокируются с удалением DNS.</p>
+        </div>
+        <a href="https://t.me/pon4ikdomain_bot?start=report" target="_blank" class="btn-abuse">
+          Подать жалобу (Abuse / DMCA)
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="https://t.me/pon4ikdomain_bot" target="_blank">Telegram Bot</a>
+        <span>•</span>
+        <a href="https://t.me/pon4ikdomain_bot?start=report" target="_blank">Abuse Report</a>
+      </div>
+      <p>© 2026 pon4ik subdomains. Hosted on GitHub Pages with Cloudflare Edge.</p>
+    </div>
+  </footer>
+
+  <script>
+    const subInput = document.getElementById('subInput');
+    const zoneSelect = document.getElementById('zoneSelect');
+    const priceVal = document.getElementById('priceVal');
+    const charCount = document.getElementById('charCount');
+    const orderBtn = document.getElementById('orderBtn');
+
+    function calculatePrice(name) {
+      const clean = name.trim().toLowerCase();
+      const len = clean.length;
+      if (len === 0) return 25;
+      if (len <= 2) return 250;
+      if (len === 3) return 100;
+      if (len === 4) return 50;
+      return 25;
+    }
+
+    function update() {
+      const clean = subInput.value.trim().toLowerCase();
+      const len = clean.length;
+      charCount.textContent = len > 0 ? `${len} симв.` : '0 симв.';
+      priceVal.textContent = calculatePrice(clean);
+
+      if (clean.length > 0) {
+        orderBtn.href = `https://t.me/pon4ikdomain_bot`;
+      } else {
+        orderBtn.href = `https://t.me/pon4ikdomain_bot`;
+      }
+    }
+
+    subInput.addEventListener('input', update);
+    zoneSelect.addEventListener('change', update);
+    update();
+  </script>
+</body>
+</html>
